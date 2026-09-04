@@ -118,6 +118,12 @@ button {
   gap: 10px;
 }
 
+.header-greeting {
+  font-weight: 600;
+  color: var(--ink, inherit);
+  margin-right: 4px;
+}
+
 .button {
   min-height: 44px;
   border: 0;

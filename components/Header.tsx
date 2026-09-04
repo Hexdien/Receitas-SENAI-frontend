@@ -1,6 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 export function Header() {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  function handleLogout() {
+    logout();
+    router.push("/");
+  }
+
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -13,12 +25,27 @@ export function Header() {
         </Link>
 
         <nav className="header-actions" aria-label="Acesso">
-          <Link href="/login" className="button button-ghost">
-            Login
-          </Link>
-          <Link href="/cadastro" className="button button-primary">
-            Cadastre-se
-          </Link>
+          {user ? (
+            <>
+              <span className="header-greeting">Olá, {user.name}</span>
+              <button
+                type="button"
+                className="button button-ghost"
+                onClick={handleLogout}
+              >
+                Sair
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="button button-ghost">
+                Login
+              </Link>
+              <Link href="/cadastro" className="button button-primary">
+                Cadastre-se
+              </Link>
+            </>
+          )}
         </nav>
       </div>
     </header>

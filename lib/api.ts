@@ -1,4 +1,5 @@
 import type { GuideFilter, Recipe } from "@/types/recipe";
+import type { AuthUser } from "@/types/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
 
@@ -12,9 +13,24 @@ function getApiUrl(path: string) {
   return `${API_URL}${path}`;
 }
 
-function getToken() {
+export function getToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("auth_token");
+}
+
+export function getStoredUser(): AuthUser | null {
+  if (typeof window === "undefined") return null;
+
+  const raw = localStorage.getItem("auth_user");
+
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as AuthUser;
+  } catch {
+    localStorage.removeItem("auth_user");
+    return null;
+  }
 }
 
 async function request<T>(
@@ -65,11 +81,7 @@ type LoginPayload = {
 type LoginResponse = {
   token?: string;
   accessToken?: string;
-  user?: {
-    id: string | number;
-    name: string;
-    email: string;
-  };
+  user?: AuthUser;
 };
 
 export async function login(payload: LoginPayload) {
@@ -80,8 +92,14 @@ export async function login(payload: LoginPayload) {
 
   const token = data.token || data.accessToken;
 
-  if (token && typeof window !== "undefined") {
-    localStorage.setItem("auth_token", token);
+  if (typeof window !== "undefined") {
+    if (token) {
+      localStorage.setItem("auth_token", token);
+    }
+
+    if (data.user) {
+      localStorage.setItem("auth_user", JSON.stringify(data.user));
+    }
   }
 
   return data;
@@ -103,5 +121,6 @@ export async function register(payload: RegisterPayload) {
 export function logout() {
   if (typeof window !== "undefined") {
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
   }
 }
