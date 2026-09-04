@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  getCurrentUser,
   getStoredUser,
   getToken,
   login as loginRequest,
@@ -23,6 +24,7 @@ type LoginPayload = {
 
 type AuthContextValue = {
   user: AuthUser | null;
+  isAdmin: boolean;
   loading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   logout: () => void;
@@ -35,11 +37,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (getToken()) {
-      setUser(getStoredUser());
+    let active = true;
+
+    async function restoreSession() {
+      if (!getToken()) {
+        if (active) setLoading(false);
+        return;
+      }
+
+      // Mostra logo o usuário salvo para a tela não piscar...
+      if (active) setUser(getStoredUser());
+
+      // ...e confirma com a API, que é quem sabe se o token ainda vale
+      // e qual o papel atual da conta.
+      try {
+        const atual = await getCurrentUser();
+
+        if (active) {
+          setUser(atual);
+          localStorage.setItem("auth_user", JSON.stringify(atual));
+        }
+      } catch {
+        // Token inválido/expirado: o request já limpou o localStorage.
+        if (active) setUser(null);
+      } finally {
+        if (active) setLoading(false);
+      }
     }
 
-    setLoading(false);
+    restoreSession();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const login = useCallback(async (payload: LoginPayload) => {
@@ -53,7 +83,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isAdmin: user?.role === "ADMIN", loading, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

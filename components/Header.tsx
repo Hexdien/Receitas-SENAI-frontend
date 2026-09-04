@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 export function Header() {
-  const { user, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const router = useRouter();
 
   function handleLogout() {
@@ -27,7 +27,10 @@ export function Header() {
         <nav className="header-actions" aria-label="Acesso">
           {user ? (
             <>
-              <span className="header-greeting">Olá, {user.name}</span>
+              <span className="header-greeting">
+                Olá, {user.name}
+                {isAdmin && <span className="header-badge">Admin</span>}
+              </span>
               <button
                 type="button"
                 className="button button-ghost"
