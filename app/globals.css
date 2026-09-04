@@ -118,6 +118,12 @@ button {
   gap: 10px;
 }
 
+.header-greeting {
+  font-weight: 600;
+  color: var(--ink, inherit);
+  margin-right: 4px;
+}
+
 .button {
   min-height: 44px;
   border: 0;
@@ -172,10 +178,14 @@ button {
 .sidebar {
   position: sticky;
   top: 112px;
-  height: calc(100vh - 140px);
+  /* max-height, e nao height: com altura fixa o conteudo transbordava e o
+     ultimo botao do guia ficava cortado em telas mais baixas. */
+  max-height: calc(100vh - 140px);
   padding: 38px 0 28px;
   display: flex;
   flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
 }
 
 .sidebar-heading span,
@@ -189,7 +199,7 @@ button {
 }
 
 .sidebar-heading p {
-  margin: 8px 0 22px;
+  margin: 8px 0 0;
   color: var(--muted);
   font-size: 13px;
 }
@@ -197,6 +207,11 @@ button {
 .guide-list {
   display: grid;
   gap: 7px;
+  /* min-height: 0 libera o item flex para encolher; sem isso ele mantem a
+     altura do conteudo e empurra a nota para fora da tela. */
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .guide-item {
@@ -257,6 +272,7 @@ button {
 
 .sidebar-note {
   margin-top: auto;
+  flex-shrink: 0;
   border-radius: 19px;
   padding: 18px;
   background: var(--orange-soft);
@@ -778,6 +794,203 @@ button {
   font-weight: 800;
 }
 
+/* Gerenciamento de receitas (admin) */
+
+.section-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.button-small {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+
+.button-danger {
+  border: 1px solid #e2c2ba;
+  background: #f7e6e1;
+  color: var(--danger);
+}
+
+.button-danger:hover {
+  background: #f1d8d1;
+}
+
+.recipe-admin-actions {
+  margin-top: 14px;
+  padding-top: 14px;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+}
+
+/* Receita sem foto cadastrada */
+
+.recipe-image-empty {
+  display: grid;
+  place-items: center;
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.form-success {
+  margin-bottom: 18px;
+  border-radius: 11px;
+  padding: 11px 13px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.state-card .button {
+  margin-top: 18px;
+}
+
+/* Formulario de receita */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(33, 54, 45, 0.45);
+  backdrop-filter: blur(2px);
+  overflow-y: auto;
+}
+
+.modal {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 48px);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 24px 26px 18px;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-header h2 {
+  margin: 5px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: var(--green-soft);
+  color: var(--ink);
+}
+
+.modal-form {
+  padding: 22px 26px 26px;
+  display: grid;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.modal-form label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.modal-form label small {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.modal-form input,
+.modal-form textarea,
+.modal-form select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 13px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 400;
+}
+
+.modal-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.modal-form input:focus,
+.modal-form textarea:focus,
+.modal-form select:focus {
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+}
+
+.modal-form input[type="file"] {
+  padding: 9px 11px;
+  font-size: 12px;
+}
+
+.modal-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.modal-preview {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--green-soft);
+}
+
+.modal-preview img {
+  display: block;
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+}
+
+.modal-actions {
+  margin-top: 4px;
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+
 /* Responsividade */
 
 @media (max-width: 1180px) {
@@ -803,7 +1016,9 @@ button {
 
   .sidebar {
     position: static;
-    height: auto;
+    max-height: none;
+    overflow: visible;
+    gap: 0;
     padding: 22px 0 2px;
   }
 
@@ -816,6 +1031,7 @@ button {
     display: flex;
     gap: 8px;
     overflow-x: auto;
+    overflow-y: visible;
     padding-bottom: 8px;
     scrollbar-width: none;
   }
@@ -870,6 +1086,19 @@ button {
 }
 
 @media (max-width: 640px) {
+  .section-heading {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .modal-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-backdrop {
+    padding: 12px;
+  }
+
   .header-inner {
     width: calc(100% - 24px);
     min-height: 72px;
@@ -955,4 +1184,17 @@ button {
   .auth-heading h2 {
     font-size: 39px;
   }
+}
+
+.header-badge {
+  margin-left: 8px;
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: middle;
 }
