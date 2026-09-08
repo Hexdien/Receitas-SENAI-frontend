@@ -7,3 +7,4 @@ out
 .vercel
 *.log
 .DS_Store
+.env*

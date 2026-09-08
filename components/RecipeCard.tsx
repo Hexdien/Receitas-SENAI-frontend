@@ -8,6 +8,7 @@ type RecipeCardProps = {
   canManage: boolean;
   busy?: boolean;
   onToggleFavorite: (id: Recipe["id"]) => void;
+  onOpen: (recipe: Recipe) => void;
   onEdit?: (recipe: Recipe) => void;
   onDelete?: (recipe: Recipe) => void;
 };
@@ -18,6 +19,7 @@ export function RecipeCard({
   canManage,
   busy = false,
   onToggleFavorite,
+  onOpen,
   onEdit,
   onDelete,
 }: RecipeCardProps) {
@@ -71,6 +73,15 @@ export function RecipeCard({
         {recipe.description && (
           <p className="recipe-description">{recipe.description}</p>
         )}
+
+        <button
+          type="button"
+          className="recipe-link"
+          onClick={() => onOpen(recipe)}
+          aria-label={`Ver detalhes de ${recipe.title}`}
+        >
+          Ver receita <span aria-hidden="true">&rarr;</span>
+        </button>
 
         {canManage && (
           <div className="recipe-admin-actions">

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { RecipeCard } from "@/components/RecipeCard";
+import { RecipeDetail } from "@/components/RecipeDetail";
 import { RecipeForm } from "@/components/RecipeForm";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/lib/auth-context";
@@ -46,11 +47,14 @@ export default function HomePage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Recipe | null>(null);
   const [busyId, setBusyId] = useState<Recipe["id"] | null>(null);
+  const [detailId, setDetailId] = useState<Recipe["id"] | null>(null);
   const [notice, setNotice] = useState("");
 
   const loadRecipes = useCallback(async () => {
     setLoading(true);
     setError("");
+
+    setDetailId(null);
 
     try {
       setRecipes(await getRecipes(selectedFilter));
@@ -163,6 +167,7 @@ export default function HomePage() {
   }
 
   const currentTitle = filterTitles[selectedFilter];
+  const detailRecipe = recipes.find((item) => item.id === detailId) ?? null;
 
   return (
     <>
@@ -274,6 +279,7 @@ export default function HomePage() {
                     canManage={isAdmin}
                     busy={busyId === recipe.id}
                     onToggleFavorite={toggleFavorite}
+                    onOpen={(item) => setDetailId(item.id)}
                     onEdit={(item) => {
                       setEditing(item);
                       setFormOpen(true);
@@ -286,6 +292,23 @@ export default function HomePage() {
           </section>
         </main>
       </div>
+
+      {detailRecipe && (
+        <RecipeDetail
+          recipe={detailRecipe}
+          isFavorite={Boolean(detailRecipe.favorite)}
+          canManage={isAdmin}
+          busy={busyId === detailRecipe.id}
+          onToggleFavorite={toggleFavorite}
+          onEdit={(item) => {
+            setDetailId(null);
+            setEditing(item);
+            setFormOpen(true);
+          }}
+          onDelete={handleDelete}
+          onClose={() => setDetailId(null)}
+        />
+      )}
 
       {formOpen && (
         <RecipeForm
